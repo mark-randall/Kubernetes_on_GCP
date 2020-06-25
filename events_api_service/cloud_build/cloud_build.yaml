@@ -1,0 +1,15 @@
+steps:
+    - id: 'build events api'
+      name: 'gcr.io/cloud-builders/docker'
+      args: ['build', '-t', 'gcr.io/${PROJECT_ID}/${_SERVICE_NAME}/events_api:${_SERVICE_VERSION}', '.']
+
+    - id: 'push events api'
+      name: 'gcr.io/cloud-builders/docker'
+      args: ['push', 'gcr.io/${PROJECT_ID}/${_SERVICE_NAME}/events_api:${_SERVICE_VERSION}']
+      
+# substitutions:
+#   _SERVICE_NAME: (deployment/app name)
+#   _SERVICE_VERSION: (deployment version)
+#
+# Automatically provided:
+#   PROJECT_ID: (the project)

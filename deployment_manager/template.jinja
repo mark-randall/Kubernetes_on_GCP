@@ -1,0 +1,39 @@
+#
+# Give Google APIs Service Agent Service Account the IAM Admin role 
+# Necessary to update project IAM policy
+#
+
+resources:
+
+- name: service-account
+  type: iam.v1.serviceAccount
+  properties:
+    accountId: {{ env["deployment"] }}
+    displayName: {{ env["deployment"] }} service account
+
+- name: add-policy-bindings
+  type: add_policy_bindings.jinja
+  metadata:
+    dependsOn:
+    - service-account
+  properties:
+    bindings:
+    - type: projects
+      resource: {{ env["project"] }}
+      members: 
+      - serviceAccount:{{ env["deployment"] }}@{{ env["project"] }}.iam.gserviceaccount.com
+      roles:
+      - monitoring.metricWriter
+      - monitoring.viewer
+      - logging.logWriter
+      - storage.objectViewer
+
+- name: cluster
+  type: cluster.jinja
+  metadata:
+    dependsOn:
+    - service-account
+  properties:
+    zone: {{ properties['zone'] }}
+    initialNodeCount: {{ properties["initialNodeCount"] }}
+    serviceAccount: {{ env["deployment"] }}@{{ env["project"] }}.iam.gserviceaccount.com

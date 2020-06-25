@@ -1,0 +1,40 @@
+resources:
+- name: {{ env["deployment"] }}-sql
+  type: sqladmin.v1beta4.instance
+  properties:
+    backendType: SECOND_GEN
+    instanceType: CLOUD_SQL_INSTANCE
+    databaseVersion: {{ properties["databaseVersion"] }}
+    region: {{ properties["region"] }}
+    settings:
+      tier: {{ properties["settings"]["tier"] }}
+      storageAutoResize: true
+      activationPolicy: ALWAYS
+      {% if properties["settings"]["backupConfiguration"]["enabled"] %}
+      backupConfiguration:
+        enabled: true
+        binaryLogEnabled: true
+      {% endif %}
+
+{% if properties["database"] %}
+- name: {{ env["deployment"] }}-db
+  type: sqladmin.v1beta4.database
+  properties:
+    name: {{ properties["database"]["name"] }}
+    instance: {{ env["deployment"] }}-sql
+  metadata:
+    dependsOn: 
+    - {{ env["deployment"] }}-sql
+{% endif %}
+
+{% for user in properties["database"]["users"] %}
+- name: {{ env["deployment"] }}-db-{{ user["name"] }}
+  type: sqladmin.v1beta4.user
+  properties:
+    name: {{ user["name"] }}
+    instance: {{ env["deployment"] }}-sql
+    password: {{ user["password"] }}
+  metadata:
+    dependsOn:
+    - {{ env["deployment"] }}-sql
+{% endfor %}

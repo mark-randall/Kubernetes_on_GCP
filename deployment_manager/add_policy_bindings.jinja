@@ -1,0 +1,15 @@
+resources:
+{% for binding in properties["bindings"] %} 
+{% for role in binding["roles"] %}
+{% for member in binding["members"] %}
+- name: {{ binding["type"] }}-{{ role }}-{{ member }}
+  type: gcp-types/cloudresourcemanager-v1:virtual.{{ binding["type"] }}.iamMemberBinding
+  properties:
+    resource: {{ binding["resource"] }}
+    member: {{ member }}
+    role: roles/{{ role }}
+{% endfor %}
+{% endfor %}
+{% endfor %}
+      
+

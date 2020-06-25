@@ -1,0 +1,8 @@
+Django==3.0.4
+django-environ
+gunicorn
+pyyaml
+djangorestframework
+psycopg2-binary
+google-cloud-secret-manager==0.1.1
+google-python-cloud-debugger; sys_platform == 'linux'
