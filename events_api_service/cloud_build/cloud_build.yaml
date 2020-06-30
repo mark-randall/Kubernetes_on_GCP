@@ -6,10 +6,18 @@ steps:
     - id: 'push events api'
       name: 'gcr.io/cloud-builders/docker'
       args: ['push', 'gcr.io/${PROJECT_ID}/${_SERVICE_NAME}/events_api:${_SERVICE_VERSION}']
+
+    # - id: 'migrate'
+    #   name: 'gcr.io/google-appengine/exec-wrapper'
+    #   args: ['-i', 'gcr.io/${PROJECT_ID}/${_SERVICE_NAME}:${_SERVICE_VERSION}',
+    #          '-s', '${PROJECT_ID}:${_REGION}:${_SQL_INSTANCE_NAME}',
+    #          '-e', 'PROJECT_ID=${PROJECT_ID}',
+    #          '--', 'sh', 'django_migrate.sh']
       
 # substitutions:
 #   _SERVICE_NAME: (deployment/app name)
 #   _SERVICE_VERSION: (deployment version)
+#   _SQL_INSTANCE_NAME
 #
 # Automatically provided:
 #   PROJECT_ID: (the project)

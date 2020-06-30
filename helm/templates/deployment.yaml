@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  labels:
+    app: api-deployment
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: api-deployment
+  template:
+    metadata:
+      labels:
+        app: api-deployment
+    spec:
+      volumes:
+      - name: sa-volume
+        secret:
+          secretName: {{ .Values.name }}-sa-key
+      containers:
+      - name: api
+        image: gcr.io/{{ .Values.project }}/{{ .Values.name }}/{{ .Values.apiImageName }}:{{ .Values.apiVersion }}
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: cloudsql-db-credentials
+              key: databaseurl
+        - name: DEBUG
+          value: 'false'
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.17
+        command:
+        - "/cloud_sql_proxy"
+        #- "-ip_address_types=PRIVATE"
+        - "-instances={{ .Values.project }}:{{ .Values.databaseRegion }}:{{ include "events.fullname" . }}-sql=tcp:5432"
+        - "-credential_file=/secrets/service_account.json"
+        securityContext:
+          runAsNonRoot: true
+        volumeMounts:
+        - name: sa-volume
+          mountPath: /secrets/
+          readOnly: true

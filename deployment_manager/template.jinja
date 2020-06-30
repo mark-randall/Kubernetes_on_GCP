@@ -1,5 +1,5 @@
 #
-# Give Google APIs Service Agent Service Account the IAM Admin role 
+# NOTE: Give Google APIs Service Agent Service Account the IAM Admin role 
 # Necessary to update project IAM policy
 #
 
@@ -27,6 +27,24 @@ resources:
       - monitoring.viewer
       - logging.logWriter
       - storage.objectViewer
+      - secretmanager.secretAccessor
+      - cloudsql.client
+
+- name: cloudsql
+  type: cloudsql.jinja
+  properties:
+    name: {{ env["deployment"] }}
+    region: {{ properties['region'] }}
+    databaseVersion: POSTGRES_11
+    settings:
+      tier: db-f1-micro
+      backupConfiguration:
+        enabled: false
+    database:
+      name: {{ env["deployment"] }}
+      users:
+      - name: {{ env["deployment"] }}
+        password: {{ properties["db-user-password"] }}
 
 - name: cluster
   type: cluster.jinja

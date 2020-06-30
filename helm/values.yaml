@@ -1,0 +1,11 @@
+project: events-281416
+name: Events
+
+replicaCount: 1
+zone: us-central1-a
+databaseRegion: us-central1
+
+apiImageName: events_api
+apiVersion: v0
+
+

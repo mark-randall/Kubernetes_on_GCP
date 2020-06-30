@@ -1,0 +1,16 @@
+
+# ignore python cache
+__pycache__/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ignore vim caches
+*.swp
+
+# VS code
+.vscode
+
+# GCP SQL Proxy
+cloud_sql_proxy
